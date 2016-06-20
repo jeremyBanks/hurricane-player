@@ -1,0 +1,17 @@
+{
+	"main": "server.js",
+	"scripts": {
+		"start": "node server.js"
+	},
+	"dependencies": {
+		"express": "^5.0.0-alpha.2",
+		"request": "^2.72.0",
+		"escape-html": "^1.0.3",
+		"sw-toolbox": "^3.2.1",
+		"jsdom": "^9.2.1"
+	},
+	"engines": {
+		"node": "6.2.1"
+	},
+	"license": "MIT"
+}
