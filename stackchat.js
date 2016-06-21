@@ -34,7 +34,8 @@ class Chat {
       
     });
     
-    log(`${fullOpts.method} ${fullOpts.url} ${fullOpts.qs ? JSON.stringify(fullOpts.qs) : ''}`);
+    log(`${fullOpts.method} ${fullOpts.url} ${
+      fullOpts.qs ? JSON.stringify(fullOpts.qs) : ''}`);
     
     return new Promise((resolve, reject) => {
       request(fullOpts, (error, response, body) => {
