@@ -55,7 +55,10 @@ class Bot {
       return this.chat.search(
         'img',
         null,
-        this.chat.userId
+        this.chat.userId,
+        1,
+        100,
+        'newest'
       ).then(messages => {
         log(`State search returned ${messages.length} messages.`);
 
@@ -89,7 +92,7 @@ class Bot {
         
         if (state.keepAlive) {
           const sigAge = Date.now() - state.t;
-          const maxAge = 1000 * 60 * 60 * 24 * 3.5;
+          const maxAge = 1000 * 60 * 60 * 4;
 
           if (sigAge > maxAge) {
             log(`Triggering keep-alive for room ${roomId} because last signature was ${sigAge} > ${maxAge} ms ago.`);
