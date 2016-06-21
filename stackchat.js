@@ -34,6 +34,8 @@ class Chat {
       
     });
     
+    log(`${fullOpts.method} ${fullOpts.url} ${fullOpts.qs ? JSON.stringify(fullOpts.qs) : ''}`);
+    
     return new Promise((resolve, reject) => {
       request(fullOpts, (error, response, body) => {
         if (error) {
@@ -125,6 +127,10 @@ class Chat {
         log("Authenticated to chat. Reading fkey.");
         this.chatFkey = window.document.querySelector('[name=fkey]').value;
         this.userId = Number(window.document.querySelector('.topbar-menu-links a').getAttribute('href').split('/')[2]);
+        
+        if (!this.userId) {
+          throw new Error("Unable to identify own chat user id.");
+        }
         
         if (!this.chatFkey) {
           throw new Error("Could not find chat fkey");
