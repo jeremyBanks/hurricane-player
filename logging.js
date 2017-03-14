@@ -94,7 +94,7 @@ const getLogSvg = projectName =>
     <foreignObject x="0" y="0" width="100%" height="100%">
       <div xmlns="http://www.w3.org/1999/xhtml" id="main">
         <div id="header">
-          Log for <a href="https://hyperdev.com/#!/project/${projectName}">${projectName}</a>
+          Log for <a href="https://glitch.com/edit/#!/project/${projectName}">${projectName}</a>
         </div>
         <div id="contents">
           ${logItems.map(l => HTML`<div>

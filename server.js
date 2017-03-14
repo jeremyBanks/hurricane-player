@@ -59,7 +59,7 @@ if (process.env.SE_USERNAME && process.env.SE_PASSWORD) {
 
 app.use((request, response, next) => {
   nameProject_(
-    request.headers.host.match(/\.hyperdev\./) && 
+    request.headers.host.match(/\.glitch\./) && 
     (request.headers.host || '').split('.')[0]);
   
   const referer = request.headers.referer || '';
@@ -84,7 +84,7 @@ app.get('/favicon.ico', (request, response) => response.status(404).end());
  * Serves a transparent pixel.
  */
 app.get('/.png', (request, response) => {
-  response.redirect('https://cdn.hyperdev.com/us-east-1%3Af5641323-74ec-49b7-a124-58c71eaab2db%2Fping.png');
+  response.redirect('https://cdn.glitch.com/us-east-1%3Af5641323-74ec-49b7-a124-58c71eaab2db%2Fping.png');
 });
 
 
@@ -95,24 +95,30 @@ app.get('/.png', (request, response) => {
 app.get('/feed', (request, response) => {
   const ip = (request.headers['x-forwarded-for'] || request.connection.remoteAddress).split(',')[0];
   log(HTML`Serving feed to <a href="http://${ip}"><code>${ip}</code></a>.`);
+  const dateSlug = (new Date()).toISOString().replace(/T.*Z/, 'T00:00:00.000Z');
+  const feedUrl = `https://${projectName}.glitch.me/feed`;
+  const pageUrl = `https://${projectName}.glitch.me/`;
   response.set('Cache-Control', 'no-cache, no-store, must-revalidate');
-  response.set('Content-Type', 'application/rss+xml');
+  response.set('Content-Type', 'application/atom+xml');
   response.end(
     HTML`<?xml version="1.0" encoding="utf-8"?>
-    <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-    <channel>
-      <title>${projectName}</title>
-      <description></description>
-    	<atom:link rel="self" href="https://${projectName}.hyperdev.space/feed" type="application/rss+xml" />
-    	<link>https://${projectName}.hyperdev.space/</link>
-      <item>
-    		<title>${projectName}</title>
-        <guid>https://${projectName}.hyperdev.space/feed</guid>
-        <link>https://${projectName}.hyperdev.space/</link>
-    		<description>${projectName}</description>
-    	</item>
-    </channel>
-    </rss>`.toString()
+    <feed xmlns="http://www.w3.org/2005/Atom">
+      <title type="text">${projectName}</title>
+      <id>${feedUrl}</id>
+      <updated>${dateSlug}</updated>
+      <link rel="self" href="${feedUrl}" type="application/rss+xml" />
+      <entry>
+        <id>${feedUrl}#${dateSlug}</id>
+        <published>${dateSlug}</published>
+        <author>
+          <name>${projectName}</name>
+          <uri>${pageUrl}</uri>
+        </author>
+        <updated>${dateSlug}</updated>
+        <title>${projectName}</title>
+        <link rel="alternate" href="${pageUrl}" />
+      </entry>
+    </feed>`.toString()
   );
 });
 
@@ -134,7 +140,7 @@ app.get('/log', (request, response) => {
 app.get('/*', (request, response) => {
   response.set('Cache-Control', 'no-cache, no-store, must-revalidate');
   response.set('Content-Type', 'image/svg+xml');
-  response.set('Refresh', `0;URL=https://hyperdev.com/#!/project/${projectName}`);
+  response.set('Refresh', `0;URL=https://glitch.com/edit/#!/project/${projectName}`);
   response.end(
     HTML`<?xml version="1.0" encoding="utf-8"?>
     <svg
@@ -155,7 +161,7 @@ app.get('/*', (request, response) => {
           font-family: Verdana, Arial, sans-serif;
         "
       >
-        ${projectName} on HyperDev
+        Edit Source of ${projectName} on Glitch
       </text>
     </svg>`.toString());
 });
