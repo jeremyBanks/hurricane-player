@@ -9,7 +9,12 @@ class Bot {
     this.name = name;
     this.chat = chat;
    
-    this.stateUrlPrefix = `https://${name}.hyperdev.space/?_?`;
+    this.stateUrlPrefixes = [
+      `https://${name}.glitch.me/?_?`,
+      `https://${name}.gomix.me/?_?`,
+      `https://${name}.hyperdev.space/?_?`
+    ];
+    this.canonicalStateUrlPrefix = this.stateUrlPrefixes[0];
 
     log("Bot waiting for connection to initialize.");
   
@@ -42,7 +47,7 @@ class Bot {
     
     return this.chat.sendMessage(
       roomId,
-      `${prefix}!${this.stateUrlPrefix}${encodeURIComponent(JSON.stringify(state))}`);
+      `${prefix}!${this.canonicalStateUrlPrefix}${encodeURIComponent(JSON.stringify(state))}`);
   }
  
   initialize_() {
@@ -68,18 +73,20 @@ class Bot {
           }
           const imageLink = message.domContent.querySelector('.ob-image a');
           const imageUrl = imageLink && imageLink.href || '';
-          if (imageUrl.startsWith(this.stateUrlPrefix)) {
-            try {
-              const stateRaw = imageUrl.slice(this.stateUrlPrefix.length);
-              const stateText = decodeURIComponent(stateRaw);
-              const stateData = JSON.parse(stateText);
-              
-              stateData.previousStateMessageId = message.messageId;
-              
-              log(`Found state for ${message.roomId}: ${stateText}`);
-              this.roomStates.set(message.roomId, stateData);
-            } catch (error) {
-              log(`Error parsing state from ${imageLink}: ${error}.`);
+          for (const prefix of this.stateUrlPrefixes) {
+            if (imageUrl.startsWith(prefix)) {
+              try {
+                const stateRaw = imageUrl.slice(prefix.length);
+                const stateText = decodeURIComponent(stateRaw);
+                const stateData = JSON.parse(stateText);
+                
+                stateData.previousStateMessageId = message.messageId;
+                
+                log(`Found state for ${message.roomId}: ${stateText}`);
+                this.roomStates.set(message.roomId, stateData);
+              } catch (error) {
+                log(`Error parsing state from ${imageLink}: ${error}.`);
+              }
             }
           }
         }
@@ -92,7 +99,7 @@ class Bot {
         
         if (state.keepAlive) {
           const sigAge = Date.now() - state.t;
-          const maxAge = 1000 * 60 * 60 * 4;
+          const maxAge = 1000 * 60 * 60 * 24 * 3;
 
           if (sigAge > maxAge) {
             log(`Triggering keep-alive for room ${roomId} because last signature was ${sigAge} > ${maxAge} ms ago.`);
